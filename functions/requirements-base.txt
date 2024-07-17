@@ -1,0 +1,10 @@
+firebase_functions~=0.1.0
+psycopg2-binary==2.9.9
+pydantic==2.7.3
+pydantic_core==2.18.4
+python-dotenv==1.0.1
+PyYAML==6.0.1
+requests==2.32.3
+SQLAlchemy==2.0.30
+typing_extensions==4.12.2
+urllib3==2.2.2
