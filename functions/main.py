@@ -65,7 +65,7 @@ def getEventsInDateRange(req: https_fn.Request) -> https_fn.Response:
     # Grab the text parameter.
     start_date = req.args.get("startDate")
     end_date = req.args.get("endDate")
-    country = req.args.get("country")
+    country = req.args.get("country", "US")
 
     print("start date: ", start_date)
     print("end date: ", end_date)
@@ -89,7 +89,7 @@ def getEventsInDateRange(req: https_fn.Request) -> https_fn.Response:
             query = query.where(ECONOMIC_CALENDAR_TABLE.c.country == country)
         
         result = connection.execute(query)
-        events = [deserialize_row(row) for row in result]
+        events = [deserialize_row(row) for row in result][:15]
         return https_fn.Response(json.dumps(events), status=200)
     
 @https_fn.on_request()
@@ -98,7 +98,7 @@ def getHistoryForEvent(req: https_fn.Request) -> https_fn.Response:
     a new document in the messages collection."""
     # Grab the text parameter.
     event = req.args.get("event")
-    country = req.args.get("country")
+    country = req.args.get("country", "US")
     end_date = req.args.get("endDate")
     start_date = req.args.get("startDate")
 
@@ -116,7 +116,7 @@ def getHistoryForEvent(req: https_fn.Request) -> https_fn.Response:
         ).where(
             and_(
                 ECONOMIC_CALENDAR_TABLE.c.country == country,
-                ECONOMIC_CALENDAR_TABLE.c.event == event
+                ECONOMIC_CALENDAR_TABLE.c.event.like(f"%{event}%")
             )
         )
         
@@ -129,7 +129,7 @@ def getHistoryForEvent(req: https_fn.Request) -> https_fn.Response:
             )
 
         result = connection.execute(query)
-        events = [deserialize_row(row) for row in result]
+        events = [deserialize_row(row) for row in result][:15]
         return https_fn.Response(json.dumps(events), status=200)
 
 
