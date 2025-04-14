@@ -1,6 +1,5 @@
-from sqlalchemy import Table, Column, String, Boolean, Double, TIMESTAMP, MetaData
-
-METADATA = MetaData()
+from sqlalchemy import Table, Column, String, Boolean, Double, TIMESTAMP
+from macrosurfer.models.metadata import METADATA
 
 ECONOMIC_CALENDAR_TABLE = Table(
     'economic_calendar', METADATA,

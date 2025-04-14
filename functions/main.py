@@ -7,29 +7,21 @@ from datetime import datetime
 from decimal import Decimal
 
 # The Cloud Functions for Firebase SDK to create Cloud Functions and set up triggers.
-from firebase_functions import firestore_fn, https_fn, options
+from firebase_functions import https_fn, options
 from dotenv import load_dotenv
 # The Firebase Admin SDK to access Cloud Firestore.
-from firebase_admin import initialize_app, firestore
-import google.cloud.firestore
+from firebase_admin import initialize_app
 from sqlalchemy.sql import text
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy import create_engine, MetaData, Table, select, and_
-from macrosurfer.tables import ECONOMIC_CALENDAR_TABLE, EVENT_DETAILS
+from sqlalchemy import create_engine, select, and_
+from macrosurfer.models.fmp.economics import ECONOMIC_CALENDAR_TABLE, EVENT_DETAILS
+from macrosurfer.database import Database
 
 initialize_app()
 load_dotenv()
 
-DATABASE_URL = f'postgresql+psycopg2://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST_NAME")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
-print(DATABASE_URL)
-engine = create_engine(DATABASE_URL)
-# metadata = MetaData()
-
-# # Define your table
-# ECONOMIC_CALENDAR_TABLE = Table(
-#     'economic_calendar', metadata,
-#     autoload_with=engine
-# )
+# Replace the direct database connection with Database class
+db = Database()
+engine = db.get_engine()
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -74,7 +66,7 @@ def getEventsInDateRange(req: https_fn.Request) -> https_fn.Response:
     if not start_date or not end_date:
         return https_fn.Response("startDate and endDate are required", status=400)
     
-    with engine.connect() as connection:
+    with db.get_engine().connect() as connection:
         query = select(
             ECONOMIC_CALENDAR_TABLE
 
@@ -109,7 +101,7 @@ def getHistoryForEvent(req: https_fn.Request) -> https_fn.Response:
     if not event or not country:
         return https_fn.Response("Event and country name are required", status=400)
     
-    with engine.connect() as connection:
+    with db.get_engine().connect() as connection:
         query = select(
             ECONOMIC_CALENDAR_TABLE
 
@@ -144,7 +136,7 @@ def getEventDetails(req: https_fn.Request) -> https_fn.Response:
     if not event or not country:
         return https_fn.Response("Event and country name are required", status=400)
     
-    with engine.connect() as connection:
+    with db.get_engine().connect() as connection:
         query = select(
             EVENT_DETAILS
 
