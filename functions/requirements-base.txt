@@ -8,3 +8,6 @@ requests
 SQLAlchemy
 typing_extensions
 urllib3
+openai
+langchain
+langchain-community

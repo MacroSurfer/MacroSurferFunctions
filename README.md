@@ -1,152 +1,132 @@
-# MacroSurferFunctions
+# 🌊 MacroSurfer Scout
 
-This repository contains a list of Firestore API functions to support [MacroSurfer](https://app.macrosurfer.com). These functions facilitate interaction with the Firestore database to perform various CRUD (Create, Read, Update, Delete) operations required by the MacroSurfer application.
+***Built for traders, quants, and macro thinkers. Surf the data tide.*** 🌊
 
-## Table of Contents
+## What is MacroSurfer Scout?
 
-- [Getting Started](#getting-started)
-- [Installation](#installation)
-- [Functions](#functions)
-  - [Create Functions](#create-functions)
-  - [Read Functions](#read-functions)
-  - [Update Functions](#update-functions)
-  - [Delete Functions](#delete-functions)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+**MacroSurfer Scout** is an open-source intelligence layer designed for quantitative developers, financial engineers, and traders who want to build powerful data pipelines and leverage LLMs for fast insights into financial and economic data.
 
-## Getting Started
+Scout makes it easy to:
+- 🏗️ Build your own **big data curation pipeline** to store economic, fundamental, and news data into an SQL database.
+- 🤖 Query complex datasets using a **LLM-powered natural language agent**, skipping manual SQL writing.
+- 🚀 Deploy a **cloud-native API** to Google Cloud in just a few clicks — ready to be connected to any UI, terminal, or automated workflow.
 
-To get started with using the Firestore API functions for MacroSurfer, clone this repository and follow the installation instructions below.
+---
 
-## Installation
+## 🧠 Why MacroSurfer Scout?
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/MacroSurferFunctions.git
-    cd MacroSurferFunctions
-    ```
+Modern quantitative investing requires a seamless flow from raw data to actionable insights. Scout is built to help you:
 
-2. Install the required dependencies:
-    ```bash
-    npm install
-    ```
+- **Ingest and manage** vast financial data sources at scale.
+- **Ask questions like a human**, and get structured answers with SQL-driven accuracy.
+- **Deploy in the cloud**, and integrate with dashboards, bots, notebooks, or mobile apps.
 
-3. Set up your Firebase project and Firestore database:
-    - Go to the [Firebase Console](https://console.firebase.google.com/).
-    - Create a new project or use an existing project.
-    - Enable Firestore in your Firebase project.
-    - Obtain the Firebase configuration and update your project with these details.
+Whether you're building a systematic macro model, a real-time alert system, or your own Bloomberg Terminal — Scout gives you the foundation.
 
-4. Update the Firestore configuration in the project:
-    ```javascript
-    // firebaseConfig.js
-    export const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID",
-        measurementId: "YOUR_MEASUREMENT_ID"
-    };
-    ```
+---
 
-## Functions
+## 🚀 Features
 
-### Create Functions
+### 📊 1. Scalable Data Curation Engine
+- Ingest data from APIs (e.g., FRED, EDGAR, News APIs, Alpha Vantage, etc.).
+- Normalize and store in **PostgreSQL** or any compatible SQL database.
+- Modular connectors for custom data sources.
+- Timestamped and structured for **quantitative analytics**.
 
-- **createUser(userData)**: Adds a new user to the Firestore database.
-    ```javascript
-    async function createUser(userData) {
-        const userRef = firestore.collection('users').doc();
-        await userRef.set(userData);
-        return userRef.id;
-    }
-    ```
+### 🤖 2. LLM-Powered Agent
+- Chat-style interface or API call to **query data in natural language**.
+- Powered by OpenAI / local models (configurable).
+- Handles multi-table joins, summaries, trend spotting, and anomaly detection.
+- Designed for **research acceleration** and exploration.
 
-- **createMacro(macroData)**: Adds a new macro entry to the Firestore database.
-    ```javascript
-    async function createMacro(macroData) {
-        const macroRef = firestore.collection('macros').doc();
-        await macroRef.set(macroData);
-        return macroRef.id;
-    }
-    ```
+### ☁️ 3. Cloud-Native Deployment (GCP)
+- One-command deployment to **Google Cloud Run / App Engine**.
+- Auto-scales and integrates with **GCP SQL**, **IAM**, and **logging**.
+- Exposes REST API endpoints to hook into **Streamlit**, **React**, **CLI tools**, or **trading bots**.
 
-### Read Functions
+---
 
-- **getUser(userId)**: Retrieves a user by their ID from the Firestore database.
-    ```javascript
-    async function getUser(userId) {
-        const userRef = firestore.collection('users').doc(userId);
-        const doc = await userRef.get();
-        if (doc.exists) {
-            return doc.data();
-        } else {
-            throw new Error('No such document!');
-        }
-    }
-    ```
+## 📦 Getting Started
 
-- **getMacrosByUser(userId)**: Retrieves all macros associated with a specific user.
-    ```javascript
-    async function getMacrosByUser(userId) {
-        const macrosRef = firestore.collection('macros').where('userId', '==', userId);
-        const snapshot = await macrosRef.get();
-        const macros = [];
-        snapshot.forEach(doc => {
-            macros.push({ id: doc.id, ...doc.data() });
-        });
-        return macros;
-    }
-    ```
+### 🔧 Prerequisites
 
-### Update Functions
+- Python 3.13+
+- PostgreSQL instance (local or cloud) we recommend Supabase to get you started free
+- GCP account & project (for deployment)
+- [OpenAI API key](https://platform.openai.com/) (or custom LLM)
 
-- **updateUser(userId, userData)**: Updates user information in the Firestore database.
-    ```javascript
-    async function updateUser(userId, userData) {
-        const userRef = firestore.collection('users').doc(userId);
-        await userRef.update(userData);
-    }
-    ```
+### 🐍 Install Locally
 
-- **updateMacro(macroId, macroData)**: Updates a macro entry in the Firestore database.
-    ```javascript
-    async function updateMacro(macroId, macroData) {
-        const macroRef = firestore.collection('macros').doc(macroId);
-        await macroRef.update(macroData);
-    }
-    ```
+```bash
+git clone git@github.com:MacroSurfer/MacroSurferFunctions.git
+cd MacroSurferFunctions
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-### Delete Functions
+### ⚙️ Setup Config
+Create a .env file in the /functions (example in functions/env-example):
+```bash
+DB_USERNAME=""
+DB_PASSWORD=""
+DB_HOST_NAME=""
+DB_PORT=""
+DB_NAME=""
+FINANCIAL_MODELINGPREP_API_KEY=""
+OPENAI_API_KEY=""
+```
 
-- **deleteUser(userId)**: Deletes a user from the Firestore database.
-    ```javascript
-    async function deleteUser(userId) {
-        const userRef = firestore.collection('users').doc(userId);
-        await userRef.delete();
-    }
-    ```
+### 🧪 Run the Agent Locally
+```bash
+python functions/test_agent.py
+```
 
-- **deleteMacro(macroId)**: Deletes a macro entry from the Firestore database.
-    ```javascript
-    async function deleteMacro(macroId) {
-        const macroRef = firestore.collection('macros').doc(macroId);
-        await macroRef.delete();
-    }
-    ```
+Ask questions like:
+```vbnet
+> What is the GDP growth trend for the past 5 years?
+> Show me all companies with increasing ROE in the last 3 quarters.
+> What's the inflation rate spike during oil shocks since 2000?
+```
 
-## Usage
+## ☁️ Deploy to Google Cloud
+---
+```bash
+gcloud auth login
+gcloud config set project your-gcp-project
+gcloud builds submit --tag gcr.io/your-gcp-project/macrosurfer-scout
+gcloud run deploy scout-api --image gcr.io/your-gcp-project/macrosurfer-scout --platform managed
+```
+Now your API endpoint is live and scalable. 🎉
 
-To use these functions, import them into your project and call them with the appropriate parameters. Ensure you have initialized Firebase and Firestore in your project before invoking these functions.
+## 🧩 Integrations
+* 🖥️ Connect to dashboards (Streamlit, React, Grafana).
 
-```javascript
-import { createUser, getUser, updateUser, deleteUser } from './path/to/functions';
+* 🔗 Use in Jupyter Notebooks or trading pipelines.
 
-// Example usage
-const userId = await createUser({ name: 'John Doe', email: 'john@example.com' });
-const user = await getUser(userId);
-await updateUser(userId, { email: 'john.doe@example.com' });
-await deleteUser(userId);
+* ⚡ Webhooks or Slack bot integration ready.
+
+## 🤝 Contributing
+We welcome contributors of all experience levels! Here's how to get involved:
+
+1. Fork the repo and clone it locally.
+
+2. Create a new branch: git checkout -b feature-your-feature-name
+
+3. Make your changes and commit: git commit -m "Add feature"
+
+4. Push and submit a PR: git push origin feature-your-feature-name
+
+Please follow the [Conventional Commits](https://www.conventionalcommits.org/) format and include test coverage where possible.
+
+## 📄 License
+```
+MIT License
+
+Copyright (c) 2025 MacroSurfer
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction...
+
+```
