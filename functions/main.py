@@ -15,13 +15,17 @@ from sqlalchemy.sql import text
 from sqlalchemy import create_engine, select, and_
 from macrosurfer.models.fmp.economics import ECONOMIC_CALENDAR_TABLE, EVENT_DETAILS
 from macrosurfer.database import Database
-
+from macrosurfer.agent.query_agent import QueryAgent
+from langchain.chat_models import ChatOpenAI
 initialize_app()
 load_dotenv()
 
 # Replace the direct database connection with Database class
 db = Database()
 engine = db.get_engine()
+
+llm = ChatOpenAI(temperature=0, model="gpt-4o")
+query_agent = QueryAgent(db, llm)
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -151,3 +155,16 @@ def getEventDetails(req: https_fn.Request) -> https_fn.Response:
         if len(events) == 0:
             return https_fn.Response("No details found", status=404)
         return https_fn.Response(json.dumps(events[0]), status=200)
+
+@https_fn.on_request(cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"]))
+def chat(req: https_fn.Request) -> https_fn.Response:
+    """Take the text parameter passed to this HTTP endpoint and insert it into
+    a new document in the messages collection."""
+    # Grab the text parameter.
+    question = req.args.get("question")
+
+    if not question:
+        return https_fn.Response("Please ask a question", status=400)
+    
+    result = query_agent.query(question)
+    return https_fn.Response(result, status=200)
