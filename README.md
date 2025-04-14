@@ -28,7 +28,7 @@ Whether you're building a systematic macro model, a real-time alert system, or y
 ## 🚀 Features
 
 ### 📊 1. Scalable Data Curation Engine
-- Ingest data from APIs (e.g., FRED, EDGAR, News APIs, Alpha Vantage, etc.).
+- Ingest data from APIs (e.g., FMP, EDGAR, News APIs, Alpha Vantage, etc.).
 - Normalize and store in **PostgreSQL** or any compatible SQL database.
 - Modular connectors for custom data sources.
 - Timestamped and structured for **quantitative analytics**.
