@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import MetaData
 from macrosurfer.models.metadata import METADATA
 from sqlalchemy.orm import scoped_session
+from macrosurfer.models.fmp import *
 
 class Database:
     def __init__(self):

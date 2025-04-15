@@ -3,7 +3,8 @@ from datetime import datetime
 from macrosurfer.database import Database
 import os
 import requests
-from typing import Any
+from typing import Any, List
+from sqlalchemy.exc import SQLAlchemyError
 
 class FMPDataIngestor(ABC):
     FMP_ENDPOINT = "https://financialmodelingprep.com/stable"
@@ -17,11 +18,6 @@ class FMPDataIngestor(ABC):
     @abstractmethod
     def ingest(self, start_date: datetime, end_date: datetime):
         pass
-
-    def _get_data(self, url: str) -> Any:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.json()
     
     @abstractmethod
     def _get_url(self, start_date: datetime, end_date: datetime) -> str:
@@ -30,3 +26,37 @@ class FMPDataIngestor(ABC):
     @staticmethod
     def strf_date(date: datetime) -> str:
         return date.strftime('%Y-%m-%d')
+    
+    @abstractmethod
+    def _get_stmt(self, event: Any) -> Any:
+        pass
+
+    def _get_data(self, url: str) -> Any:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+    
+    def _execute_batch(self, data: List[Any]):
+        session = self._db.get_session()
+        try:
+            for i in range(0, len(data), self._batch_size):
+                batch = data[i:i + self._batch_size]
+                stmts = []
+                for event in batch:
+                    stmt = self._get_stmt(event)
+                    stmts.append(stmt)
+
+                for stmt in stmts:
+                    session.execute(stmt)
+                
+                session.commit()
+                print(f"Processed batch {i//self._batch_size + 1} of {(len(data) + self._batch_size - 1)//self._batch_size}")
+        
+        except requests.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+        except SQLAlchemyError as db_err:
+            print(f"Database error occurred: {db_err}")
+        except Exception as err:
+            print(f"An error occurred: {err}")
+        finally:
+            session.close()
