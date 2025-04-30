@@ -12,7 +12,7 @@ class FinancialStatementSymbolsIngestor(FMPDataIngestor):
 
     @override
     def ingest(self, start_date: datetime, end_date: datetime):
-        url = self._get_url(start_date, end_date)
+        url = self._get_url_with_api_key(start_date, end_date)
         data = self._get_data(url)
         self._execute_batch(data)
 
@@ -34,5 +34,5 @@ class FinancialStatementSymbolsIngestor(FMPDataIngestor):
     
     @override
     def _get_url(self, start_date: datetime, end_date: datetime) -> str:
-        return f"{self.FMP_ENDPOINT}/financial-statement-symbol-list?apikey={self._api_key}"
+        return f"{self.FMP_ENDPOINT}/financial-statement-symbol-list"
 

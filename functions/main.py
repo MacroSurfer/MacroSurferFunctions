@@ -15,15 +15,16 @@ from sqlalchemy.sql import text
 from sqlalchemy import create_engine, select, and_
 from macrosurfer.models.fmp.economics import ECONOMIC_CALENDAR_TABLE, EVENT_DETAILS
 from macrosurfer.database import Database
-from macrosurfer.agent.query_agent import QueryAgent
 from langchain.chat_models import ChatOpenAI
+from macrosurfer.agent.query_agent import QueryAgent
+
 initialize_app()
 load_dotenv()
 
 # Replace the direct database connection with Database class
 db = Database()
 engine = db.get_engine()
-
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 llm = ChatOpenAI(temperature=0, model="gpt-4o")
 query_agent = QueryAgent(db, llm)
 

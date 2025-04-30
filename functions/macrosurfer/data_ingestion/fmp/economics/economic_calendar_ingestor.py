@@ -12,7 +12,7 @@ class EconomicCalendarIngestor(FMPDataIngestor):
 
     @override
     def ingest(self, start_date: datetime, end_date: datetime):
-        url = self._get_url(start_date, end_date)
+        url = self._get_url_with_api_key(start_date, end_date)
         data = self._get_data(url)
         self._execute_batch(data)
 
@@ -50,4 +50,4 @@ class EconomicCalendarIngestor(FMPDataIngestor):
     def _get_url(self, start_date: datetime, end_date: datetime) -> str:
         from_date = self.strf_date(start_date)
         to_date = self.strf_date(end_date)
-        return f"{self.FMP_ENDPOINT}/economic-calendar?from={from_date}&to={to_date}&apikey={self._api_key}"
+        return f"{self.FMP_ENDPOINT}/economic-calendar?from={from_date}&to={to_date}"

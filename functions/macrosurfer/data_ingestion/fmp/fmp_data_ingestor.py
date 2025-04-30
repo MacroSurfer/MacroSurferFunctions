@@ -35,6 +35,13 @@ class FMPDataIngestor(ABC):
         response = requests.get(url)
         response.raise_for_status()
         return response.json()
+
+    def _get_url_with_api_key(self, start_date: datetime, end_date: datetime) -> str:
+        url = self._get_url(start_date, end_date)
+        if '?' in url:
+            return f"{url}&apikey={self._api_key}"
+        else:
+            return f"{url}?apikey={self._api_key}"
     
     def _execute_batch(self, data: List[Any]):
         session = self._db.get_session()

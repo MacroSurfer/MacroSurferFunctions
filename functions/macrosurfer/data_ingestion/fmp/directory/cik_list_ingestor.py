@@ -1,14 +1,13 @@
-from typing import Any, override
 from macrosurfer.data_ingestion.fmp.fmp_data_ingestor import FMPDataIngestor
-from datetime import datetime
-from sqlalchemy.dialects.postgresql import insert as pg_insert
 from macrosurfer.database import Database
-from macrosurfer.models.fmp import COMPANY_SYMBOLS
+from macrosurfer.models.fmp import CIK_LIST
+from datetime import datetime
+from typing import Any, override
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+class CIKListIngestor(FMPDataIngestor):
 
-class CompanySymbolListIngestor(FMPDataIngestor):
-
-    def __init__(self, db: Database, batch_size: int = 100):
-        super().__init__(db, COMPANY_SYMBOLS, batch_size)
+    def __init__(self, db: Database):
+        super().__init__(db, CIK_LIST)
 
     @override
     def ingest(self, start_date: datetime, end_date: datetime):
@@ -19,15 +18,17 @@ class CompanySymbolListIngestor(FMPDataIngestor):
     @override
     def _get_stmt(self, event: Any) -> Any:
         return pg_insert(self._table).values(
-            symbol=event['symbol'],
-            company_name=event['companyName']
+            cik=event['cik'],
+            company_name=event['companyName'],
+            
         ).on_conflict_do_update(
-            index_elements=['symbol'],
+            index_elements=['cik'],
             set_=dict(
-                company_name=event['companyName']
+                company_name=event['companyName'],
             )
         )
 
     @override
     def _get_url(self, start_date: datetime, end_date: datetime) -> str:
-        return f"{self.FMP_ENDPOINT}/stock-list"
+        return f"{self.FMP_ENDPOINT}/cik-list"
+
