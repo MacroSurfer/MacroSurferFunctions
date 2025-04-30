@@ -3,7 +3,7 @@
     {
       "source": "functions",
       "codebase": "default",
-      "runtime": "python313",
+      "runtime": "python312",
       "ignore": [
         "venv",
         ".git",

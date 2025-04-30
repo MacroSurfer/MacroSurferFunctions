@@ -165,7 +165,11 @@ def chat(req: https_fn.Request) -> https_fn.Response:
     question = req.args.get("question")
 
     if not question:
-        return https_fn.Response("Please ask a question", status=400)
+        # Check request body
+        body = req.json
+        if not body:
+            return https_fn.Response("Please ask a question", status=400)
+        question = body.get("question")
     
     result = query_agent.query(question)
     return https_fn.Response(result, status=200)
