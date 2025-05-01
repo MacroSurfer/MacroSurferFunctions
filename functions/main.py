@@ -171,5 +171,7 @@ def chat(req: https_fn.Request) -> https_fn.Response:
             return https_fn.Response("Please ask a question", status=400)
         question = body.get("question")
     
-    result = query_agent.query(question)
+    result = query_agent.query(question + "Please respond in html format.")
+    if not result:
+        return https_fn.Response("No answer found", status=404)
     return https_fn.Response(result, status=200)
