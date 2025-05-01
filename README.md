@@ -4,6 +4,9 @@
 
 ## 👀 What is MacroSurfer Scout?
 
+![Alt text](./images/illustration.jpg)
+
+
 **MacroSurfer Scout** is an open-source intelligence layer designed for quantitative developers, financial engineers, and traders who want to build powerful data pipelines and leverage LLMs for fast insights into financial and economic data.
 
 Scout makes it easy to:
