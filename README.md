@@ -49,6 +49,20 @@ Whether you're building a systematic macro model, a real-time alert system, or y
 
 ---
 
+## 🗺️ Roadmap
+
+Stay tuned for exciting new features and improvements! Here's what's coming up for MacroSurfer Scout:
+
+| Feature | Description | Timeline |
+|---------|-------------|----------|
+| **📈 Enhanced agent with quantative analytics** | Enhanced the agent to add quantative analytics capability, not just querying database. | Q2 2025 |
+| **📊 Recurrent Data backfill** | Automatically batch request and backfill new data in without manual effort. | Q2 2025 |
+| **🔍 Visualization** | Add visualization from agent's analysis via charting in the conversation. | Q4 2025 |
+| **🔒 Security Enhancements** | Add UI login and API login token verification so it can run not just from your localhost. | Q4 2025 |
+| **🌐 Global market data support** | Support stock data storage in major global markets (US, CA, UK, EU, JP, HK, etc). | Q2 2026 |
+
+---
+
 ## 📦 Getting Started
 
 ### 🔧 Prerequisites
@@ -138,4 +152,4 @@ Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction...
 
-```
+
