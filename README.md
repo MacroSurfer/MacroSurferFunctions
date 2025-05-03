@@ -115,10 +115,8 @@ Ask questions like:
 ## ☁️ Deploy to Google Cloud
 ---
 ```bash
-gcloud auth login
-gcloud config set project your-gcp-project
-gcloud builds submit --tag gcr.io/your-gcp-project/macrosurfer-scout
-gcloud run deploy scout-api --image gcr.io/your-gcp-project/macrosurfer-scout --platform managed
+firebase login
+firebase deploy --only functions
 ```
 Now your API endpoint is live and scalable. 🎉
 
