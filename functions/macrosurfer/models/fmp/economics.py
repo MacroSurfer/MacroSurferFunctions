@@ -16,6 +16,37 @@ ECONOMIC_CALENDAR_TABLE = Table(
     Column('unit', String),
 )
 
+ECONOMIC_CALENDAR_TABLE_RAW = Table(
+    'economic_calendar_raw', METADATA,
+    Column('event', String, primary_key=True),
+    Column('event_date', TIMESTAMP, primary_key=True),
+    Column('country', String, primary_key=True),
+    Column('currency', String),
+    Column('previous', Double),
+    Column('estimate', Double),
+    Column('actual', Double),
+    Column('change', Double),
+    Column('impact', String),
+    Column('change_percentage', Double),
+    Column('unit', String),
+)
+
+ECONOMIC_CALENDAR_TABLE_PROCESSED = Table(
+    'economic_calendar_processed', METADATA,
+    Column('event', String, primary_key=True),
+    Column('event_date', TIMESTAMP, primary_key=True),
+    Column('additional_identifier', String, primary_key=True),
+    Column('country', String, primary_key=True),
+    Column('currency', String),
+    Column('previous', Double),
+    Column('estimate', Double),
+    Column('actual', Double),
+    Column('change', Double),
+    Column('impact', String),
+    Column('change_percentage', Double),
+    Column('unit', String),
+)
+
 EVENT_DETAILS = Table(
     'event_details', METADATA,
     Column('event', String, primary_key=True),

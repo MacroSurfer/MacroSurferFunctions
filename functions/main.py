@@ -3,11 +3,13 @@
 # Deploy with `firebase deploy`
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
+import time
+from threading import Thread
 
 # The Cloud Functions for Firebase SDK to create Cloud Functions and set up triggers.
-from firebase_functions import https_fn, options
+from firebase_functions import https_fn, options, scheduler_fn
 from dotenv import load_dotenv
 # The Firebase Admin SDK to access Cloud Firestore.
 from firebase_admin import initialize_app
@@ -17,6 +19,7 @@ from macrosurfer.models.fmp.economics import ECONOMIC_CALENDAR_TABLE, EVENT_DETA
 from macrosurfer.database import Database
 from langchain.chat_models import ChatOpenAI
 from macrosurfer.agent.query_agent import QueryAgent
+from macrosurfer.data_ingestion.ingest_economic_calendar import ingest_incoming_month_economic_calendar
 
 initialize_app()
 load_dotenv()
@@ -175,3 +178,29 @@ def chat(req: https_fn.Request) -> https_fn.Response:
     if not result:
         return https_fn.Response("No answer found", status=404)
     return https_fn.Response(result, status=200)
+
+# Function to run the recurrent job
+@scheduler_fn.on_schedule(schedule="*/10 * * * *")
+def update_economic_calendar():
+    # Set timezone if needed
+    current_time = datetime.now()
+    current_time.replace(tzinfo=timezone.utc)
+
+    start_time = current_time - timedelta(days=1)
+    end_time = current_time + timedelta(days=1)
+
+    ingest_incoming_month_economic_calendar(db, start_time, end_time)
+    return "Ingestion triggered", 200
+
+
+@scheduler_fn.on_schedule(schedule="0 0 * * *")
+def update_economic_calendar_every_day_on_new_event():
+    # Set timezone if needed
+    current_time = datetime.now()
+    current_time.replace(tzinfo=timezone.utc)
+
+    start_time = current_time - timedelta(days=1)
+    end_time = current_time + timedelta(days=8)
+
+    ingest_incoming_month_economic_calendar(db, start_time, end_time)
+    return "Ingestion triggered", 200
