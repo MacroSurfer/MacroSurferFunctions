@@ -11,6 +11,7 @@ from threading import Thread
 # The Cloud Functions for Firebase SDK to create Cloud Functions and set up triggers.
 from firebase_functions import https_fn, options, scheduler_fn
 from dotenv import load_dotenv
+from firebase_functions.options import MemoryOption
 # The Firebase Admin SDK to access Cloud Firestore.
 from firebase_admin import initialize_app
 from sqlalchemy.sql import text
@@ -180,8 +181,8 @@ def chat(req: https_fn.Request) -> https_fn.Response:
     return https_fn.Response(result, status=200)
 
 # Function to run the recurrent job
-@scheduler_fn.on_schedule(schedule="*/10 * * * *")
-def update_economic_calendar():
+@scheduler_fn.on_schedule(schedule="*/10 * * * *", memory=MemoryOption(1024), timeout_sec=3600)
+def update_economic_calendar(req):
     # Set timezone if needed
     current_time = datetime.now()
     current_time.replace(tzinfo=timezone.utc)
@@ -193,8 +194,8 @@ def update_economic_calendar():
     return "Ingestion triggered", 200
 
 
-@scheduler_fn.on_schedule(schedule="0 0 * * *")
-def update_economic_calendar_every_day_on_new_event():
+@scheduler_fn.on_schedule(schedule="0 0 * * *", memory=MemoryOption(2048), timeout_sec=3600)
+def update_economic_calendar_every_day_on_new_event(req):
     # Set timezone if needed
     current_time = datetime.now()
     current_time.replace(tzinfo=timezone.utc)
