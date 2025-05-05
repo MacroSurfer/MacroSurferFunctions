@@ -51,7 +51,8 @@ class FMPDataIngestor(ABC):
                 stmts = []
                 for event in batch:
                     stmt = self._get_stmt(event)
-                    stmts.append(stmt)
+                    if stmt is not None:
+                        stmts.append(stmt)
 
                 for stmt in stmts:
                     session.execute(stmt)

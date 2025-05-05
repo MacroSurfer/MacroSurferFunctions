@@ -21,7 +21,8 @@ from macrosurfer.database import Database
 from langchain.chat_models import ChatOpenAI
 from macrosurfer.agent.query_agent import QueryAgent
 from macrosurfer.data_ingestion.ingest_economic_calendar import ingest_incoming_month_economic_calendar
-
+from macrosurfer.data_ingestion.fmp.stocks.stock_data_1_day_ingestor import StockData1DayIngestor
+from macrosurfer.data_ingestion.fmp.stocks.stock_data_1_min_ingestor import StockData1MinIngestor
 initialize_app()
 load_dotenv()
 
@@ -181,7 +182,7 @@ def chat(req: https_fn.Request) -> https_fn.Response:
     return https_fn.Response(result, status=200)
 
 # Function to run the recurrent job
-@scheduler_fn.on_schedule(schedule="*/10 * * * *", memory=MemoryOption(1024), timeout_sec=3600)
+@scheduler_fn.on_schedule(schedule="*/10 * * * *", memory=MemoryOption(512), timeout_sec=3600)
 def update_economic_calendar(req):
     # Set timezone if needed
     current_time = datetime.now()
@@ -194,14 +195,32 @@ def update_economic_calendar(req):
     return "Ingestion triggered", 200
 
 
-@scheduler_fn.on_schedule(schedule="0 0 * * *", memory=MemoryOption(2048), timeout_sec=3600)
+# Runs every hour on the hour
+@scheduler_fn.on_schedule(schedule="0 * * * *", memory=MemoryOption(2048), timeout_sec=3600)
 def update_economic_calendar_every_day_on_new_event(req):
     # Set timezone if needed
     current_time = datetime.now()
     current_time.replace(tzinfo=timezone.utc)
 
-    start_time = current_time - timedelta(days=1)
+    one_day_before = (current_time - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     end_time = current_time + timedelta(days=8)
+    today_end_time = current_time.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-    ingest_incoming_month_economic_calendar(db, start_time, end_time)
+
+    ingestor = StockData1DayIngestor(db, 'SPY')
+    ingestor.ingest(one_day_before, today_end_time)
+
+    ingest_incoming_month_economic_calendar(db, one_day_before, end_time)
+    return "Ingestion triggered", 200
+
+# runs every 2 minutes
+@scheduler_fn.on_schedule(schedule="*/2 * * * *", memory=MemoryOption(512), timeout_sec=3600)
+def every_2_min_jobs(req):
+    current_time = datetime.now()
+    current_time.replace(tzinfo=timezone.utc)
+    one_day_before = (current_time - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start_time = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end_time = current_time.replace(hour=23, minute=59, second=59, microsecond=999999)
+    ingestor = StockData1MinIngestor(db, 'SPY', backfill=False)
+    ingestor.ingest(one_day_before, today_end_time)
     return "Ingestion triggered", 200
