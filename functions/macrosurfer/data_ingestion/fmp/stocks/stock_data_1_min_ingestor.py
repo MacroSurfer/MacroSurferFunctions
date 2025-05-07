@@ -20,8 +20,6 @@ class StockData1MinIngestor(FMPDataIngestor):
 
     @override
     def _get_stmt(self, event: Any) -> Any:
-        if (not self._backfill) and event['date'] < self._start_time:
-            return None
         event_date = datetime.strptime(event['date'], '%Y-%m-%d %H:%M:%S')
         return pg_insert(self._table).values(
             symbol=self._symbol,
