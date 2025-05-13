@@ -9,7 +9,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from macrosurfer.models.fmp import ECONOMIC_CALENDAR_TABLE_PROCESSED, ECONOMIC_CALENDAR_TABLE_RAW
 import requests
 from datetime import datetime, timedelta
-from sqlalchemy import insert, update, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 import re
 load_dotenv()
@@ -20,8 +19,6 @@ def split_title_and_month(text: str) -> Tuple[str, Optional[str]]:
         title, month = match.group(1), match.group(2)
         return title.strip(), month.strip()
     return text.strip(), ""  # No parentheses found
-
-
 
 def ingest_incoming_month_economic_calendar(db: Database, start_date: datetime, end_date: datetime):
     # Format dates for the API

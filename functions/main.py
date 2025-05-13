@@ -214,8 +214,9 @@ def update_economic_calendar_every_day_on_new_event(req):
     return "Ingestion triggered", 200
 
 # runs every 2 minutes
-@scheduler_fn.on_schedule(schedule="*/2 * * * *", memory=MemoryOption(512), timeout_sec=3600)
+@scheduler_fn.on_schedule(schedule="*/2 * * * 1-5", memory=MemoryOption(512), timeout_sec=3600, timezone="America/New_York")
 def every_2_min_jobs(req):
+    # early exit if outside of market hours and non trading day
     current_time = datetime.now()
     current_time.replace(tzinfo=timezone.utc)
     one_day_before = (current_time - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
